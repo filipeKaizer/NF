@@ -50,10 +50,15 @@ class _NFState extends State<NF> {
         backgroundColor: Settings.HomeBackgroundColor,
         // Cabeçalho
         appBar: AppBar(
+          centerTitle: true,
           backgroundColor: Settings.appBarBackgoundColor,
-          title: Center(
-            child: Text('NF', style: TextStyle(color: Settings.TextColor)),
-          ),
+          title: Text('NF', style: TextStyle(color: Settings.TextColor)),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.add, color: Settings.TextColor),
+            ),
+          ],
         ),
 
         // Home
@@ -80,6 +85,11 @@ class _NFState extends State<NF> {
           },
           currentIndex: navigationIndex,
           items: navigationItens,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: IconButton(
+          icon: Icon(Icons.add, color: Settings.TextColor, size: 40),
+          onPressed: () => {},
         ),
       ),
     );

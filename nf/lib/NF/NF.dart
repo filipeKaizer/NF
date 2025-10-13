@@ -4,8 +4,9 @@ class Nf {
   final int qtdProd;
 
   final General general;
-
   final Emit emit;
+  final Remet remet;
+  final List<Product> products;
 
   Nf({
     required this.total,
@@ -13,7 +14,37 @@ class Nf {
     required this.qtdProd,
     required this.general,
     required this.emit,
+    required this.remet,
+    required this.products,
   });
+}
+
+class Product {
+  late int qtd;
+  late double total;
+  late double tax;
+  late double valUnit;
+
+  late String name;
+  late String cod;
+  late String EAN;
+
+  Product({
+    required int qtd,
+    required double valUnit,
+    required String name,
+    required String cod,
+    required String EAN,
+    required double tax,
+  }) {
+    this.qtd = qtd;
+    this.valUnit = valUnit;
+    this.tax = tax;
+    this.total = tax + (qtd * valUnit);
+    this.cod = cod;
+    this.EAN = EAN;
+    this.name = name;
+  }
 }
 
 class General {
@@ -37,7 +68,7 @@ class General {
   }
 
   String getEmissionDate() {
-    return "${zeroBefor(emission.hour)}:${zeroBefor(emission.minute)} ${zeroBefor(emission.day)}-${zeroBefor(emission.month)}-${zeroBefor(emission.year)}";
+    return "${zeroBefor(emission.hour)}:${zeroBefor(emission.minute)} ${zeroBefor(emission.day)}/${zeroBefor(emission.month)}/${zeroBefor(emission.year)}";
   }
 }
 
@@ -49,6 +80,15 @@ class Emit {
   final String CNAE;
 
   Emit(this.name, this.CNAE, this.CNPJ, this.IE, this.address);
+}
+
+class Remet {
+  final String name;
+  final String CPF;
+  final String IE;
+  final Address address;
+
+  Remet(this.name, this.CPF, this.IE, this.address);
 }
 
 class Address {
@@ -71,12 +111,12 @@ class Address {
   });
 
   Address.none() {
-    this.number = 0;
-    Lgr = "";
-    bairro = "";
-    Mun = "";
-    UF = "";
-    CEP = "";
-    country = "";
+    this.number = 64;
+    Lgr = "ESTRADA DA PEDREIRA PAVILHAO 5";
+    bairro = "Pedreira";
+    Mun = "Nova Santa Rita";
+    UF = "RS";
+    CEP = "92480-000";
+    country = "Brasil";
   }
 }
