@@ -1,11 +1,22 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:nf/pages/invoicePage.dart';
 import 'package:nf/pages/otherPage.dart';
 import 'package:nf/pages/taxPage.dart';
 import 'package:nf/settings.dart';
+import 'package:nf/src/memory.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => Memory.new())],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -44,6 +55,21 @@ class _NFState extends State<NF> {
 
   @override
   Widget build(BuildContext context) {
+    Memory memory = context.watch<Memory>();
+
+    Future<void> selectFile() async {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['xml'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          memory.addXMLFile(File(result.files.single.path!));
+        });
+      }
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -55,14 +81,16 @@ class _NFState extends State<NF> {
           title: Text('NF', style: TextStyle(color: Settings.TextColor)),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: selectFile,
               icon: Icon(Icons.add, color: Settings.TextColor),
             ),
           ],
         ),
 
         // Home
-        body: Container(child: pages[navigationIndex]),
+        body: (context.watch<Memory>().nfs.length > 0)
+            ? Container(child: pages[navigationIndex])
+            : Empty(),
 
         // Navegação
         bottomNavigationBar: BottomNavigationBar(
@@ -89,7 +117,33 @@ class _NFState extends State<NF> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: IconButton(
           icon: Icon(Icons.add, color: Settings.TextColor, size: 40),
-          onPressed: () => {},
+          onPressed: selectFile,
+        ),
+      ),
+    );
+  }
+}
+
+class Empty extends StatelessWidget {
+  const Empty({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(MdiIcons.noteRemoveOutline, size: 100, color: Colors.white),
+            Center(
+              child: Text(
+                'Nenhum arquivo ainda. Crregue um com o botão (+) abaixo.',
+                style: TextStyle(color: Settings.TextColor, fontSize: 20),
+              ),
+            ),
+          ],
         ),
       ),
     );
