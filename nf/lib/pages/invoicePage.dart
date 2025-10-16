@@ -16,31 +16,29 @@ class Invoicepage extends StatefulWidget {
 class _InvoicepageState extends State<Invoicepage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 5),
-          child: ListView(
-            children: [
-              // Numero de notas
-              TotalNF(10),
-              SizedBox(height: 10),
-              // Número de produtos
-              TotalProducts(10),
-              SizedBox(height: 20),
-              // Valores
-              Row(
-                children: [
-                  CostValue("Total", 1000, MdiIcons.currencyUsd),
-                  SizedBox(width: 10),
-                  CostValue("Impostos", 100, MdiIcons.bank),
-                ],
-              ),
-              SizedBox(height: 30),
-              // Lista de NF
-              NFList(),
-            ],
-          ),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 5),
+        child: ListView(
+          children: [
+            // Numero de notas
+            TotalNF(10),
+            SizedBox(height: 10),
+            // Número de produtos
+            TotalProducts(10),
+            SizedBox(height: 20),
+            // Valores
+            Row(
+              children: [
+                CostValue("Total", 1000, MdiIcons.currencyUsd),
+                SizedBox(width: 10),
+                CostValue("Impostos", 100, MdiIcons.bank),
+              ],
+            ),
+            SizedBox(height: 30),
+            // Lista de NF
+            NFList(),
+          ],
         ),
       ),
     );

@@ -20,10 +20,11 @@ class Nf {
 }
 
 class Product {
-  late int qtd;
-  late double total;
-  late double tax;
-  late double valUnit;
+  late int qtd = 0;
+  late double total = 0;
+  late double totalTax = 0;
+  late List<Tax> tax;
+  late double valUnit = 0;
 
   late String name;
   late String cod;
@@ -35,16 +36,30 @@ class Product {
     required String name,
     required String cod,
     required String EAN,
-    required double tax,
+    required List<Tax> tax,
   }) {
     this.qtd = qtd;
     this.valUnit = valUnit;
     this.tax = tax;
-    this.total = tax + (qtd * valUnit);
     this.cod = cod;
     this.EAN = EAN;
     this.name = name;
+
+    // Calcula as taxas e o valor total
+    this.total = qtd * valUnit;
+
+    for (Tax t in tax) {
+      this.totalTax += t.percent * total;
+    }
+    this.total += this.totalTax;
   }
+}
+
+class Tax {
+  late String type;
+  late double percent;
+
+  Tax({required this.type, required this.percent});
 }
 
 class General {

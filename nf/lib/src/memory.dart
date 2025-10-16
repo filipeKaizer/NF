@@ -1,15 +1,23 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:nf/NF/NF.dart';
+import 'package:nf/settings.dart';
 import 'package:nf/src/XMLFile.dart';
+import 'package:xml/xml.dart';
+import 'package:http/http.dart' as http;
 
 class Memory extends ChangeNotifier {
   late List<Nf> nfs = [];
-  late List<Xmlfile> files = [];
+  late List<XmlDocument> files = [];
 
   Memory.new() {
+    List<Tax> tax = [
+      Tax(type: "ICMS", percent: 10),
+      Tax(type: "IPI", percent: 9),
+    ];
+
     List<Product> products = [
       Product(
         qtd: 10,
@@ -17,7 +25,7 @@ class Memory extends ChangeNotifier {
         name: "Desodorante",
         cod: "626231",
         EAN: "6223145",
-        tax: 10,
+        tax: tax,
       ),
       Product(
         qtd: 7,
@@ -25,7 +33,7 @@ class Memory extends ChangeNotifier {
         name: "Travesseito",
         cod: "623295",
         EAN: "983375",
-        tax: 15,
+        tax: tax,
       ),
     ];
 
@@ -62,9 +70,45 @@ class Memory extends ChangeNotifier {
   }
 
   void addXMLFile(File xmlFile) {
-    files.add(Xmlfile(xmlFile));
+    String content = xmlFile.readAsStringSync();
+
+    // Remove <?xml ... ?> declaration if present
+    content = content.replaceFirst(RegExp(r'<\?xml.*?\?>'), '');
+
+    final document = XmlDocument.parse(content);
+
+    files.add(document);
+
     notifyListeners();
   }
 
-  void sendXMLFile() {}
+  Future<void> sendXMLFile() async {
+    String xml = '''
+              <files>
+                  ''';
+
+    for (XmlDocument file in files) {
+      xml += file.toString();
+    }
+
+    xml += '''
+          </files>
+          ''';
+
+    // Envio dos dados ao servidor
+    try {
+      final response = await http.post(
+        Uri.parse(Settings.getUrl()),
+        headers: {'Content-type': 'application/xml'},
+        body: xml,
+      );
+
+      if (response.statusCode == 200) {
+        // Limpar a lista
+        files.clear();
+      }
+    } catch (error) {
+      print("Erro ao enviar: ${error}");
+    }
+  }
 }

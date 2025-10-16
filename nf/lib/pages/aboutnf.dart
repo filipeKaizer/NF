@@ -127,7 +127,7 @@ class Products extends StatelessWidget {
                         ),
                         SizedBox(width: 2),
                         Text(
-                          'R\$${nf.products[index].tax.toStringAsFixed(2)}',
+                          'R\$${nf.products[index].totalTax.toStringAsFixed(2)}',
                           style: TextStyle(
                             color: Settings.TextColor,
                             fontSize: 12,

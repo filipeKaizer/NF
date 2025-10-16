@@ -114,11 +114,6 @@ class _NFState extends State<NF> {
           currentIndex: navigationIndex,
           items: navigationItens,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: IconButton(
-          icon: Icon(Icons.add, color: Settings.TextColor, size: 40),
-          onPressed: selectFile,
-        ),
       ),
     );
   }
@@ -139,7 +134,7 @@ class Empty extends StatelessWidget {
             Icon(MdiIcons.noteRemoveOutline, size: 100, color: Colors.white),
             Center(
               child: Text(
-                'Nenhum arquivo ainda. Crregue um com o botão (+) abaixo.',
+                'Nenhum arquivo ainda. Crregue um com o botão +.',
                 style: TextStyle(color: Settings.TextColor, fontSize: 20),
               ),
             ),

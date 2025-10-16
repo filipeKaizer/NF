@@ -1,0 +1,3 @@
+class NF:
+    def __init__(self):
+        ...
