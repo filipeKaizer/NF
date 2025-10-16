@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:nf/NF/NF.dart';
+import 'package:nf/NF/utils/loading.dart';
 import 'package:nf/pages/aboutNF.dart';
 import 'package:nf/settings.dart';
 import 'package:nf/src/memory.dart';
@@ -196,8 +197,23 @@ class _NFListState extends State<NFList> {
                             size: 40,
                             color: Settings.TextColor,
                           ),
-                          onPressed: () {
-                            memory.sendXMLFile();
+                          onPressed: () async {
+                            // Mostra um indicador de carregamento enquanto envia o arquivo
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => Loading(
+                                iconData: MdiIcons.database,
+                                text:
+                                    "Salvando notas fiscais nos nossos servidores...",
+                              ),
+                            );
+                            try {
+                              await memory.sendXMLFile();
+                            } finally {
+                              Navigator.of(context).pop(); // Fecha o indicador
+                              setState(() {});
+                            }
                           },
                         ),
                       ),

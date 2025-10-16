@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from NF import NF
 
 class Flask_service:
     def __init__(self, controller):
@@ -9,4 +10,6 @@ class Flask_service:
             '''
             xml = request.data.decode('utf-8')
 
-            print(xml)
+            controller.data.addNF(NF.fromXML(xml))
+
+            return jsonify({'status': 'ok'}), 200

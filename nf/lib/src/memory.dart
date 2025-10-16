@@ -105,7 +105,8 @@ class Memory extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         // Limpar a lista
-        files.clear();
+        files = [];
+        print("enviado");
       }
     } catch (error) {
       print("Erro ao enviar: ${error}");
