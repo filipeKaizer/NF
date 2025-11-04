@@ -4,7 +4,7 @@ from jsonpath_ng import parse
 class NF:
     def __init__(self, XML):
         self.xml = XML
-        self.json : json = self.convertToJson()
+        self.json : json = json.loads(self.convertToJson())
 
     def convertToJson(self):
         # Conversões
@@ -17,7 +17,6 @@ class NF:
 
         if Json is not None:
             ...
-            # Json = Json['files']['nfeProc']
         return Json
 
     def validateJson(self, Json):
@@ -199,10 +198,10 @@ class NF:
         '''
         if self.json is not None:
             try:
-                expr = parse('$.nfeProc[*].NFe[*].infNFe[*].@Id')
-                return [match.value for match in expr.find(self.json)][0]
-            except:
-                ...
+                r = self.json["nfeProc"]["NFe"]["infNFe"]["@Id"]
+                return r
+            except Exception as e:
+                print(e)
         return None
 
 

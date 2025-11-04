@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from API.models.NF import NF
+from models.NF import NF
 
 class Flask_service:
     def __init__(self, controller):
