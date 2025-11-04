@@ -10,6 +10,12 @@ class Flask_service:
             '''
             xml = request.data.decode('utf-8')
 
-            controller.data.addNF(NF.fromXML(xml))
+            nf = NF(xml)
 
-            return jsonify({'status': 'ok'}), 200
+            if nf.json is not None:
+                controller.data.addNF(nf)
+            
+                return jsonify(nf.json), 200
+            
+            return jsonify({'status': 'error'}), 201
+        

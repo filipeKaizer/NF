@@ -209,7 +209,7 @@ class _NFListState extends State<NFList> {
                               ),
                             );
                             try {
-                              await memory.sendXMLFile();
+                              await memory.sendXMLFile(context);
                             } finally {
                               Navigator.of(context).pop(); // Fecha o indicador
                               setState(() {});

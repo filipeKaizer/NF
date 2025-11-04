@@ -1,4 +1,4 @@
-from Flask_service import Flask_service
+from API.services.Flask_service import Flask_service
 from flask import Flask
 from config import Config
 from data import Data
@@ -13,7 +13,7 @@ class Controller:
 
         # Importa as rotas
         Flask_service(self)
-        self.flask.run(host='127.0.0.1', port=self.config.PORT, debug=self.config.DEBUG)
+        self.flask.run(host='192.168.0.168', port=self.config.PORT, debug=self.config.DEBUG)
 
 if __name__ == "__main__":
     Controller()

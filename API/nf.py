@@ -1,36 +1,47 @@
 import xmltodict, json, jsonschema
+from jsonpath_ng import parse
 
 class NF:
     def __init__(self, XML):
         self.xml = XML
-        self.json = self.convertToJson()
-        ...
+        self.json : json = self.convertToJson()
 
     def convertToJson(self):
         # Conversões
         if self.xml:
             xml = xmltodict.parse(self.xml, attr_prefix='@', cdata_key='#text', force_list=None)
-            Json = json.dumps(xml, ensure_ascii=False, indent=2)
+            Json = json.dumps(xml, ensure_ascii=False, separators=(',', ':'))
 
-        #Verificação do schema
+        # Verificação do schema
         Json = self.validateJson(Json)
+
+        if Json is not None:
+            ...
+            # Json = Json['files']['nfeProc']
         return Json
 
     def validateJson(self, Json):
         '''
         Valida o Json com o schema
         '''
-        if jsonschema.validate(instance=Json, schema=self.getSchema()):
+        try:
+            instance = json.loads(Json)
+            jsonschema.validate(instance=instance, schema=self.getSchema())
             print("Arquivo Json é válido!")
             return Json
-        else:
+        except jsonschema.ValidationError as e:
+            print(f"Erro de validação do Json: {e.message}")
             return None
-        
+        except Exception as e:
+            print(f"Erro ao validar o Json: {e}")
+            return None
+    
     def getSchema(self):
+        '''
+        Retorna um schema json para as NFs
+        '''
         return {
             "$schema": "https://json-schema.org/draft-07/schema#",
-            "type": "object",
-            "properties": {
                 "files": {
                 "type": "object",
                 "properties": {
@@ -168,6 +179,33 @@ class NF:
                 },
                 "required": ["nfeProc"]
                 }
-            },
-            "required": ["files"]
             }
+
+    def getAllProducts(self):
+        '''
+        Retorna todos os produtos da nota fiscal
+        '''
+        if self.json is not None:
+            try:
+                expr = parse('$.nfeProc[*].NFe[*].det[*].prod')
+                return [match.value for match in expr.find(self.json)]
+            except:
+                ...
+        return None
+    
+    def getIdNF(self):
+        '''
+        Retorna o ID da NF
+        '''
+        if self.json is not None:
+            try:
+                expr = parse('$.nfeProc[*].NFe[*].infNFe[*].@Id')
+                return [match.value for match in expr.find(self.json)][0]
+            except:
+                ...
+        return None
+
+
+
+
+

@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:nf/NF/NF.dart';
 import 'package:nf/settings.dart';
-import 'package:nf/src/XMLFile.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,7 +28,7 @@ class Memory extends ChangeNotifier {
       Product(
         qtd: 7,
         valUnit: 72,
-        name: "Travesseito",
+        name: "Travesseiro",
         cod: "623295",
         EAN: "983375",
         tax: tax,
@@ -82,34 +80,38 @@ class Memory extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> sendXMLFile() async {
-    String xml = '''
-              <files>
-                  ''';
-
+  Future<void> sendXMLFile(BuildContext context) async {
+    int send = 0;
     for (XmlDocument file in files) {
-      xml += file.toString();
-    }
+      try {
+        final response = await http.post(
+          Uri.parse(Settings.getUrl()),
+          headers: {'Content-type': 'application/xml'},
+          body: file.toString(),
+        );
 
-    xml += '''
-          </files>
-          ''';
-
-    // Envio dos dados ao servidor
-    try {
-      final response = await http.post(
-        Uri.parse(Settings.getUrl()),
-        headers: {'Content-type': 'application/xml'},
-        body: xml,
-      );
-
-      if (response.statusCode == 200) {
-        // Limpar a lista
-        files = [];
-        print("enviado");
+        if (response.statusCode == 200) {
+          print(response.body);
+          send++;
+        }
+      } catch (error) {
+        // Nada a fazer
       }
-    } catch (error) {
-      print("Erro ao enviar: ${error}");
     }
+
+    String sended = "$send NF${plural(send)} enviado${plural(send)}";
+    String failure = ((files.length - send) == 0)
+        ? ""
+        : "e ${(files.length - send)} NF${plural(files.length - send)} com erro.";
+
+    // Mostra caixa de texto com o status
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("$sended $failure")));
+    files = [];
+  }
+
+  String plural(int val) {
+    return (val > 1) ? "s" : "";
   }
 }
