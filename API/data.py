@@ -1,4 +1,4 @@
-from NF import NF
+from API.models.NF import NF
 
 class Data:
     def __init__(self):
