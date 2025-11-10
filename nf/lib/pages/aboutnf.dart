@@ -3,50 +3,102 @@ import 'package:flutter_material_design_icons/flutter_material_design_icons.dart
 import 'package:nf/NF/NF.dart';
 import 'package:nf/settings.dart';
 
-class Aboutnf extends StatelessWidget {
+class Aboutnf extends StatefulWidget {
   final Nf nf;
-  const Aboutnf({required this.nf});
+  const Aboutnf({required this.nf, Key? key}) : super(key: key);
+
+  @override
+  State<Aboutnf> createState() => _AboutnfState();
+}
+
+class _AboutnfState extends State<Aboutnf> {
+  late Nf nf;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    nf = widget.nf;
+    _loadNF();
+  }
+
+  Future<void> _loadNF() async {
+    try {
+      nf = await Nf.fromServer(nf);
+    } catch (e) {
+      print(e);
+    }
+    setState(() => loading = false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget title(String text) {
-      return Center(
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 24, color: Colors.white70),
+    if (loading) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Settings.appBarBackgoundColor,
+          title: Text(
+            'NF ${nf.general.number}',
+            style: TextStyle(color: Settings.TextColor),
+          ),
         ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
+    // Aqui a interface só é exibida após carregar
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Settings.appBarBackgoundColor,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+        title: Text(
+          'NF ${nf.general.number}',
+          style: TextStyle(color: Settings.TextColor),
         ),
-        title: Text('NF 1', style: TextStyle(color: Settings.TextColor)),
         centerTitle: true,
       ),
       backgroundColor: Settings.HomeBackgroundColor,
       body: Padding(
-        padding: const EdgeInsets.only(top: 10, bottom: 10, right: 8, left: 8),
+        padding: const EdgeInsets.all(8),
         child: ListView(
           children: [
-            // Informações gerais
-            title("Geral"),
-            GeneralInfo(nf: nf),
-            SizedBox(height: 15),
+            Row(
+              children: [
+                CostValue("Total", nf.total, MdiIcons.currencyUsd),
+                SizedBox(width: 10),
+                CostValue("Impostos", nf.tax, MdiIcons.bank),
+              ],
+            ),
             Divider(),
-            title('Emitente'),
+            Center(
+              child: Text(
+                "Geral",
+                style: TextStyle(fontSize: 24, color: Colors.white70),
+              ),
+            ),
+            GeneralInfo(nf: nf),
+            Divider(),
+            Center(
+              child: Text(
+                "Emitente",
+                style: TextStyle(fontSize: 24, color: Colors.white70),
+              ),
+            ),
             Emit(nf: nf),
             Divider(),
-            title('Remetente'),
+            Center(
+              child: Text(
+                "Remetente",
+                style: TextStyle(fontSize: 24, color: Colors.white70),
+              ),
+            ),
             Remet(nf: nf),
             Divider(),
-            title('Produtos'),
+            Center(
+              child: Text(
+                "Produtos",
+                style: TextStyle(fontSize: 24, color: Colors.white70),
+              ),
+            ),
             Products(nf: nf),
           ],
         ),
@@ -121,13 +173,13 @@ class Products extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          MdiIcons.bank,
-                          size: 12,
+                          MdiIcons.identifier,
                           color: Settings.TextColor,
+                          size: 12,
                         ),
                         SizedBox(width: 2),
                         Text(
-                          'R\$${nf.products[index].totalTax.toStringAsFixed(2)}',
+                          '${nf.products[index].cod}',
                           style: TextStyle(
                             color: Settings.TextColor,
                             fontSize: 12,
@@ -154,15 +206,56 @@ class GeneralInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        InfoBox(
-          'Número/Serie',
-          'N° ${nf.general.number.toString()} / Serie ${nf.general.series}',
-          20,
-        ),
+        InfoBox('Número', '${nf.general.number.toString()}', 20),
         InfoBox('Data de emissão', nf.general.getEmissionDate(), 20),
         InfoBox('Chave de acesso', nf.general.accessNumber, 20),
         InfoBox('Natureza', nf.general.operationType, 13),
       ],
+    );
+  }
+}
+
+class CostValue extends StatelessWidget {
+  final double value;
+  final IconData icon;
+  final String name;
+
+  const CostValue(this.name, this.value, this.icon);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width:
+          (MediaQuery.of(context).size.width / 2) -
+          13, // Metade - padding - (sizedbox / 2)
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Settings.containerColor,
+      ),
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          // Legenda
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(color: Settings.TextColor, fontSize: 15),
+                ),
+                Icon(icon, size: 20, color: Settings.TextColor),
+              ],
+            ),
+          ),
+          // Corpo
+          Text(
+            "R\$${value.toStringAsFixed(2)}",
+            style: TextStyle(color: Settings.TextColor, fontSize: 25),
+          ),
+        ],
+      ),
     );
   }
 }

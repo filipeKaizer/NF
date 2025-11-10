@@ -18,6 +18,16 @@ class Data:
         Retorna os dados solicitados em info
         '''
         if len(self.NFs) > 0 and request is not None:
+            # Dados gerais
+            if request['command'] == 'General':
+                return {
+                    'totalNF': len(self.NFs), # Qtd de NFs
+                    'totalProducts': self.getTotalProducts(), # Qtd de produtos
+                    'totalPrice': self.getTotalPrice(), # Preço total
+                    'totalTax': self.getAllTax()['Total'] or 0, # Total de taxas
+                    'products': self.getGeneralNFs() # Informações das NFs
+                }
+
             products = []
             # Todos os produtos nas notas fiscais
             if request['command'] == 'Products':
@@ -41,7 +51,41 @@ class Data:
         
         # Todas as tributações
         if request['command'] == 'TaxAll':
-            tax = {
+            return self.getAllTax()
+
+        # Retorna todas as informações de uma nota fiscal
+        if request['command'] == 'NF':
+            if request['id'] is not None:
+                for nf in self.NFs:
+                    if request['id'] == nf.getIdNF():
+                        return nf.getAllInfo()
+
+        return None
+    
+    def getTotalProducts(self):
+        '''
+        Conta o total de produtos
+        '''
+        produtcs = 0
+        for nf in self.NFs:
+            produtcs += len(nf.getAllProducts())
+
+        return produtcs
+    
+    def getTotalPrice(self):
+        '''
+        Obtem o preço total de todos os produtos
+        '''
+        total = 0
+        for nf in self.NFs:
+            total += nf.getTotalPrice()
+        return total
+    
+    def getAllTax(self):
+        '''
+        Obtem todas as taxas
+        '''
+        tax = {
                 'ICMS': 0,
                 'IPI': 0,
                 'PIS': 0,
@@ -51,11 +95,18 @@ class Data:
                 'Total': 0
             }
             
-            for nf in self.NFs:
-                nf_tax = nf.getAllTax()
-                for t in tax.keys():
-                    tax[t] += nf_tax[t] if nf_tax[t] is not None else 0
-            
-            return tax
+        for nf in self.NFs:
+            nf_tax = nf.getAllTax()
+            for t in tax.keys():
+                tax[t] += nf_tax[t] if nf_tax[t] is not None else 0
 
-        return None
+        return tax
+    
+    def getGeneralNFs(self):
+        '''
+        Gera uma lista com dados gerais das NFs
+        '''
+        nfs = []
+        for nf in self.NFs:
+            nfs.append(nf.getGeneralInfo())
+        return nfs

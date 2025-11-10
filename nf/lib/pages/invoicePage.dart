@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
 import 'package:nf/NF/NF.dart';
+import 'package:nf/NF/invoiceData.dart';
 import 'package:nf/NF/utils/loading.dart';
 import 'package:nf/pages/aboutNF.dart';
 import 'package:nf/settings.dart';
@@ -17,23 +18,30 @@ class Invoicepage extends StatefulWidget {
 class _InvoicepageState extends State<Invoicepage> {
   @override
   Widget build(BuildContext context) {
+    Invoicedata invoicedata =
+        context.watch<Memory>().invoicedata as Invoicedata;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 5),
         child: ListView(
           children: [
             // Numero de notas
-            TotalNF(10),
+            TotalNF(invoicedata.totalNFs),
             SizedBox(height: 10),
             // Número de produtos
-            TotalProducts(10),
+            TotalProducts(invoicedata.TotalProducts),
             SizedBox(height: 20),
             // Valores
             Row(
               children: [
-                CostValue("Total", 1000, MdiIcons.currencyUsd),
+                CostValue(
+                  "Total",
+                  invoicedata.totalPrice,
+                  MdiIcons.currencyUsd,
+                ),
                 SizedBox(width: 10),
-                CostValue("Impostos", 100, MdiIcons.bank),
+                CostValue("Impostos", invoicedata.totalTax, MdiIcons.bank),
               ],
             ),
             SizedBox(height: 30),
@@ -160,7 +168,7 @@ class _NFListState extends State<NFList> {
   bool savedNF = true;
   @override
   Widget build(BuildContext context) {
-    final List<Nf> nfs = context.watch<Memory>().nfs;
+    final List<Nf> nfs = (context.watch<Memory>().invoicedata).NFS;
     final int qtd = context.watch<Memory>().files.length;
 
     Widget notSavedNF(Memory memory) {

@@ -18,4 +18,12 @@ class Settings {
   static String getUrl() {
     return "http://${serverIP}:${serverPort}/${route}";
   }
+
+  static String getUrlInvoice() {
+    return "http://${serverIP}:${serverPort}/info?command=General";
+  }
+
+  static String getUrlNf(String number) {
+    return "http://${serverIP}:${serverPort}/info?command=NF&id=$number";
+  }
 }

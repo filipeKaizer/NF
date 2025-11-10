@@ -18,6 +18,18 @@ class NF:
             ...
         return Json
 
+    def getTotalPrice(self):
+        '''
+        Obtem o total gasto
+        '''
+        total = 0.0
+        if self.json is not None:
+            try:
+                total = float(self.json['infNFe']['total']['ICMSTot']['vNF'])
+            except Exception as e:
+                print(e)
+        return total
+
     def validateJson(self, Json):
         '''
         Valida o JSON com o schema.
@@ -195,7 +207,7 @@ class NF:
                 }
             }
 
-    def getAllProducts(self, order = False):
+    def getAllProducts(self) -> list:
         '''
         Retorna todos os produtos da nota fiscal
         '''
@@ -211,8 +223,8 @@ class NF:
             except Exception as e:
                 print(e)
         return None
-    
-    def getIdNF(self):
+
+    def getIdNF(self) -> str:
         '''
         Retorna o ID da NF
         '''
@@ -223,8 +235,87 @@ class NF:
             except Exception as e:
                 print(e)
         return None
+    
+    def getGeneralInfo(self):
+        '''
+        Obtem dados gerais da NF
+        '''
+        return {
+            'totalPrice': self.getTotalPrice(),
+            'totalProducts': len(self.getAllProducts()),
+            'totalTax': self.getAllTax()['Total'],
+            'id': self.getIdNF()
+        }
 
-    def getAllTax(self):
+    def getAllInfo(self):
+        '''
+        Retorna de forma estruturada todas as informações da nota fiscal
+        '''
+        products = []
+
+        # for p in self.getAllProducts():
+        #     products.append({
+        #         'qtd': 
+        #     })
+        print(self.getAllProducts())
+
+        def safe(d, *path):
+            try:
+                v = d
+                for k in path:
+                    if not isinstance(v, dict):
+                        return ""
+                    v = v.get(k)
+                    if v is None:
+                        return ""
+                return v
+            except Exception:
+                return ""
+
+        all_products = self.getAllProducts() or []
+        all_tax = self.getAllTax() or {}
+
+        return {
+            'totalPrice': safe(self.json, 'infNFe', 'total', 'ICMSTot', 'vNF'),
+            'totalTax': all_tax,
+            'qtdProd': len(all_products),
+            'general': {
+            'number': self.getIdNF() or "",
+            'emission': safe(self.json, 'infNFe', 'ide', 'dhEmi'),
+            'opType': safe(self.json, 'infNFe', 'ide', 'natOp'),
+            'accessNumber': safe(self.json, 'infNFe', 'ide', 'nNF')
+            },
+            'emit': {
+            'name': safe(self.json, 'infNFe', 'emit', 'xNome'),
+            'CNPJ': safe(self.json, 'infNFe', 'emit', 'CNPJ'),
+            'IE': safe(self.json, 'infNFe', 'emit', 'IE'),
+            'address': {
+                'number': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'nro'),
+                'lgr': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'xLgr'),
+                'bairro': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'xBairro'),
+                'country': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'xPais'),
+                'UF': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'UF'),
+                'mun': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'xMun'),
+                'CEP': safe(self.json, 'infNFe', 'emit', 'enderEmit', 'CEP')
+            }
+            },
+            'remet': {
+            'name': safe(self.json, 'infNFe', 'dest', 'xNome'),
+            'CPF': safe(self.json, 'infNFe', 'dest', 'CPF'),
+            'address': {
+                'number': safe(self.json, 'infNFe', 'dest', 'enderDest', 'nro'),
+                'lgr': safe(self.json, 'infNFe', 'dest', 'enderDest', 'xLgr'),
+                'bairro': safe(self.json, 'infNFe', 'dest', 'enderDest', 'xBairro'),
+                'country': safe(self.json, 'infNFe', 'dest', 'enderDest', 'xPais'),
+                'UF': safe(self.json, 'infNFe', 'dest', 'enderDest', 'UF'),
+                'mun': safe(self.json, 'infNFe', 'dest', 'enderDest', 'xMun'),
+                'CEP': safe(self.json, 'infNFe', 'dest', 'enderDest', 'CEP')
+            }
+            },
+            'products': all_products
+        }
+
+    def getAllTax(self) -> dict:
         '''
         Busca por uma taxa informada
         '''
@@ -257,7 +348,6 @@ class NF:
                         tax["Total"] += tax[t]
                 return tax
         return 0
-
 
     def getICMS(self, product):
         '''

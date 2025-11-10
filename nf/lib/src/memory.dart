@@ -2,69 +2,32 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:nf/NF/NF.dart';
+import 'package:nf/NF/invoiceData.dart';
 import 'package:nf/settings.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
 class Memory extends ChangeNotifier {
-  late List<Nf> nfs = [];
   late List<XmlDocument> files = [];
+  late Invoicedata invoicedata;
 
-  Memory.new() {
-    List<Tax> tax = [
-      Tax(type: "ICMS", percent: 10),
-      Tax(type: "IPI", percent: 9),
-    ];
+  Memory() {
+    // Inicializa com valores padrão
+    invoicedata = Invoicedata();
+    // Busca os dados do servidor de forma assíncrona
+    _loadInvoiceData();
+  }
 
-    List<Product> products = [
-      Product(
-        qtd: 10,
-        valUnit: 5.53,
-        name: "Desodorante",
-        cod: "626231",
-        EAN: "6223145",
-        tax: tax,
-      ),
-      Product(
-        qtd: 7,
-        valUnit: 72,
-        name: "Travesseiro",
-        cod: "623295",
-        EAN: "983375",
-        tax: tax,
-      ),
-    ];
-
-    nfs = [
-      Nf(
-        total: 1000,
-        tax: 10,
-        qtdProd: 5,
-        general: General("16546518", DateTime.now(), 6232923, "Sla", 1),
-        emit: Emit("Amazon", "166", "626260959", "62626", Address.none()),
-        remet: Remet(
-          "Filipe Sacchet Kaizer",
-          "04097842064",
-          "",
-          Address.none(),
-        ),
-        products: products,
-      ),
-      Nf(
-        total: 2000,
-        tax: 23,
-        qtdProd: 3,
-        general: General("6233", DateTime.now(), 1, "Sdqwd", 1),
-        emit: Emit("Google", "13", "6262163", "62213", Address.none()),
-        remet: Remet(
-          "Filipe Sacchet Kaizer",
-          "04097842064",
-          "",
-          Address.none(),
-        ),
-        products: products,
-      ),
-    ];
+  // Método privado para carregar os dados do servidor
+  Future<void> _loadInvoiceData() async {
+    try {
+      invoicedata = await Invoicedata.fromServer();
+      print(invoicedata.totalPrice);
+      notifyListeners(); // notifica os listeners quando os dados chegam
+    } catch (e) {
+      print("Erro ao carregar invoiceData: $e");
+      // mantém invoicedata com valores padrão se houver erro
+    }
   }
 
   void addXMLFile(File xmlFile) {
@@ -76,7 +39,7 @@ class Memory extends ChangeNotifier {
     final document = XmlDocument.parse(content);
 
     files.add(document);
-
+    print("Adicionado");
     notifyListeners();
   }
 
@@ -91,7 +54,6 @@ class Memory extends ChangeNotifier {
         );
 
         if (response.statusCode == 200) {
-          print(response.body);
           send++;
         }
       } catch (error) {
@@ -104,11 +66,12 @@ class Memory extends ChangeNotifier {
         ? ""
         : "e ${(files.length - send)} NF${plural(files.length - send)} com erro.";
 
-    // Mostra caixa de texto com o status
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text("$sended $failure")));
+
     files = [];
+    _loadInvoiceData();
   }
 
   String plural(int val) {

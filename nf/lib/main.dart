@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
+import 'package:nf/NF/invoiceData.dart';
 import 'package:nf/pages/invoicePage.dart';
 import 'package:nf/pages/otherPage.dart';
 import 'package:nf/pages/taxPage.dart';
@@ -88,7 +89,9 @@ class _NFState extends State<NF> {
         ),
 
         // Home
-        body: (context.watch<Memory>().nfs.length > 0)
+        body:
+            ((context.watch<Memory>().invoicedata).NFS.isNotEmpty ||
+                context.watch<Memory>().files.isNotEmpty)
             ? Container(child: pages[navigationIndex])
             : Empty(),
 
