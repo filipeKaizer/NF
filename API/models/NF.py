@@ -1,5 +1,4 @@
 import xmltodict, json, jsonschema
-from jsonpath_ng import parse
 
 class NF:
     def __init__(self, XML):
@@ -21,18 +20,34 @@ class NF:
 
     def validateJson(self, Json):
         '''
-        Valida o Json com o schema
+        Valida o JSON com o schema.
+        Garante que o JSON comece pela chave "NFe",
+        ignorando o que vier antes (ex: nfeProc, protNFe etc).
         '''
         try:
             instance = json.loads(Json)
+
+            # Garante que o JSON comece em "NFe"
+            if "NFe" in instance:
+                instance = instance["NFe"]
+            elif "nfeProc" in instance and "NFe" in instance["nfeProc"]:
+                instance = instance["nfeProc"]["NFe"]
+            elif "enviNFe" in instance and "NFe" in instance["enviNFe"]:
+                instance = instance["enviNFe"]["NFe"]
+            else:
+                print("Estrutura inválida: chave 'NFe' não encontrada.")
+                return None
+
+            # Validação contra o schema
             jsonschema.validate(instance=instance, schema=self.getSchema())
-            print("Arquivo Json é válido!")
-            return Json
+            print("Arquivo JSON é válido!")
+            return json.dumps(instance, ensure_ascii=False)
+
         except jsonschema.ValidationError as e:
-            print(f"Erro de validação do Json: {e.message}")
+            print(f"Erro de validação do JSON: {e.message}")
             return None
         except Exception as e:
-            print(f"Erro ao validar o Json: {e}")
+            print(f"Erro ao validar o JSON: {e}")
             return None
     
     def getSchema(self):
@@ -180,16 +195,21 @@ class NF:
                 }
             }
 
-    def getAllProducts(self):
+    def getAllProducts(self, order = False):
         '''
         Retorna todos os produtos da nota fiscal
         '''
         if self.json is not None:
             try:
-                expr = parse('$.nfeProc[*].NFe[*].det[*].prod')
-                return [match.value for match in expr.find(self.json)]
-            except:
-                ...
+                products = self.json["infNFe"]["det"]
+
+                if isinstance(products, dict):
+                    products = [products]
+
+                sorted_products = sorted(products, key=lambda x: x["prod"]["xProd"])
+                return sorted_products
+            except Exception as e:
+                print(e)
         return None
     
     def getIdNF(self):
@@ -198,13 +218,119 @@ class NF:
         '''
         if self.json is not None:
             try:
-                r = self.json["nfeProc"]["NFe"]["infNFe"]["@Id"]
+                r = self.json["infNFe"]["@Id"]
                 return r
             except Exception as e:
                 print(e)
         return None
 
+    def getAllTax(self):
+        '''
+        Busca por uma taxa informada
+        '''
+        tax = {
+                'ICMS': 0,
+                'IPI': 0,
+                'PIS': 0,
+                'COFINS': 0,
+                'ISSQN': 0,
+                'II': 0,
+                'Total': 0
+            }
+        
+        if self.json is not None:
+            products = self.getAllProducts()
+
+            # Percorre todos os produtos
+            for product in products:
+                # Percorre as taxas
+                tax["ICMS"]  += self.getICMS(product["imposto"].get("ICMS", {}))
+                tax["IPI"]   += self.getIPI(product["imposto"].get("IPI", {}))
+                tax["PIS"]   += self.getPIS(product["imposto"].get("PIS", {}))
+                tax["COFINS"]+= self.getCOFINS(product["imposto"].get("COFINS", {}))
+                tax["ISSQN"] += self.getISSQN(product["imposto"].get("ISSQN", {}))
+                tax["II"]    += self.getII(product["imposto"].get("II", {}))
+
+                # Soma todas as taxas
+                for t in tax.keys():
+                    if t != 'Total':
+                        tax["Total"] += tax[t]
+                return tax
+        return 0
 
 
+    def getICMS(self, product):
+        '''
+        Obtém o total de ICMS
+        '''
+        total_icms = 0.0
 
+        # Percorre todas as chaves do dicionário principal (ex: ICMS00, ICMS10, etc)
+        for _, conteudo in product.items():
+            if isinstance(conteudo, dict):
+                # Se existir vICMS, soma
+                if 'vICMS' in conteudo:
+                    total_icms += float(conteudo['vICMS'])
+        print("ICMS:", total_icms)
+        return total_icms
 
+    def getIPI(self, product):
+        '''
+        Obtem o total de IPI
+        '''
+        total_ipi = 0.0
+        for _, conteudo in product.items():
+            if isinstance(conteudo, dict) and 'vIPI' in conteudo:
+                total_ipi += float(conteudo['vIPI'])
+        return total_ipi
+    
+    def getPIS(self, product):
+        '''
+        Obtem o total do PIS
+        '''
+        total_pis = 0.0
+        for _, conteudo in product.items():
+            if isinstance(conteudo, dict) and 'vPIS' in conteudo:
+                total_pis += float(conteudo['vPIS'])
+        return total_pis
+    
+    def getCOFINS(self, product):
+        '''
+        Obtem o total do COFINS
+        '''
+        total_cofins = 0.0
+        for _, conteudo in product.items():
+            if isinstance(conteudo, dict) and 'vCOFINS' in conteudo:
+                total_cofins += float(conteudo['vCOFINS'])
+        return total_cofins
+    
+    def getISSQN(self, product):
+        '''
+        Obtem o total do ISSQN
+        '''
+        total_issqn = 0.0
+
+        if isinstance(product, dict):
+            # Se o campo vISSQN estiver direto
+            if 'vISSQN' in product:
+                total_issqn += float(product['vISSQN'])
+            # Caso o JSON venha com subgrupos (como outros impostos)
+            for _, conteudo in product.items():
+                if isinstance(conteudo, dict) and 'vISSQN' in conteudo:
+                    total_issqn += float(conteudo['vISSQN'])
+
+        return total_issqn
+    
+    def getII(self, product):
+        '''
+        Obtem o total do II
+        '''
+        total_ii = 0.0
+        if isinstance(product, dict):
+            if 'vII' in product:
+                total_ii += float(product['vII'])
+            # Caso venha aninhado em outro grupo
+            for _, conteudo in product.items():
+                if isinstance(conteudo, dict) and 'vII' in conteudo:
+                    total_ii += float(conteudo['vII'])
+        return total_ii

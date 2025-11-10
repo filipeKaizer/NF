@@ -6,7 +6,7 @@ class Flask_service:
         @controller.flask.route('/nf', methods=['POST'])
         def nf_route():
             '''
-            Executa as funcionalidade do nf
+            Executa a inserção de NFs
             '''
             xml = request.data.decode('utf-8')
 
@@ -18,4 +18,20 @@ class Flask_service:
                 return jsonify(nf.json), 200
             
             return jsonify({'status': 'error'}), 201
+        
+        @controller.flask.route('/info', methods=['GET'])
+        def info():
+            '''
+            Executa buscas em NFs
+            '''
+            req = {}
+            req['command'] = request.args.get('command', type=str)
+            req['id'] = request.args.get('id', type=str)
+            req['order'] = request.args.get('order', type=bool)
+
+            req['order'] = False if req['order'] is None else req['order']
+
+            response = controller.data.getFromJSON(req)
+
+            return jsonify(response)
         
