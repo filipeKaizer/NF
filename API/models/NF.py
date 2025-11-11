@@ -350,6 +350,63 @@ class NF:
                 return tax
         return 0
 
+    def getSupplier(self):
+        '''
+        Retorna os dados do supplier
+        '''
+        def safe(d, *path):
+            try:
+                v = d
+                for k in path:
+                    if not isinstance(v, dict):
+                        return ""
+                    v = v.get(k)
+                    if v is None:
+                        return ""
+                return v
+            except Exception:
+                return ""
+            
+        return {
+            'NAME': safe(self.json, 'infNFe', 'emit', 'xNome'),
+            'CNPJ': safe(self.json, 'infNFe', 'emit', 'CNPJ'),
+            'SITE': safe(self.json, 'infNFe', 'emit', 'xFant'),
+            'NFs': self.getIdNF()
+        }
+    
+    def getTransporter(self):
+        '''
+        Obtém os dados da transportadora
+        '''
+        def safe(d, *path):
+            try:
+                v = d
+                for k in path:
+                    if not isinstance(v, dict):
+                        return ""
+                    v = v.get(k)
+                    if v is None:
+                        return ""
+                return v
+            except Exception:
+                return ""
+        
+        CNPJ = safe(self.json, 'infNFe', 'transp', 'transporta', 'CNPJ')
+
+        if CNPJ != "":
+            return {
+                "NAME": safe(self.json, 'infNFe', 'transp', 'transporta', 'xNome'),
+                'CNPJ': CNPJ,
+                'NFs': self.getIdNF()
+            }
+
+        return {
+                "NAME": safe(self.json, 'infNFe', 'emit', 'xNome'),
+                'CNPJ': safe(self.json, 'infNFe', 'emit', 'CNPJ'),
+                'NFs': self.getIdNF()
+            }
+
+
     def getICMS(self, product):
         '''
         Obtém o total de ICMS

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nf/NF/NF.dart';
 import 'package:nf/NF/invoiceData.dart';
+import 'package:nf/NF/supplierData.dart';
 import 'package:nf/NF/taxData.dart';
 import 'package:nf/settings.dart';
 import 'package:xml/xml.dart';
@@ -13,10 +14,12 @@ class Memory extends ChangeNotifier {
 
   late Invoicedata invoicedata;
   late Taxdata taxdata;
+  late Supplierdata supplierdata;
 
   Memory() {
     invoicedata = Invoicedata();
     taxdata = Taxdata();
+    supplierdata = Supplierdata();
 
     _refreshData();
   }
@@ -25,6 +28,8 @@ class Memory extends ChangeNotifier {
     try {
       invoicedata = await Invoicedata.fromServer();
       taxdata = await Taxdata.fromServer();
+      supplierdata = await Supplierdata.fromServer();
+
       notifyListeners();
     } catch (e) {
       print("Erro ao atualizar dados: $e");

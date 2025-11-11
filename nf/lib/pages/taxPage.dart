@@ -18,19 +18,24 @@ class _TaxpageState extends State<Taxpage> {
   Widget build(BuildContext context) {
     Taxdata taxdata = context.watch<Memory>().taxdata;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TotalTax(taxdata.getTotalTax()),
-        SizedBox(height: 10),
-        TaxListView(taxdata: taxdata),
-        SizedBox(height: 10),
-        Text(
-          'Imposto por NF',
-          style: TextStyle(color: Settings.TextColor, fontSize: 18),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, right: 8, left: 8, bottom: 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TotalTax(taxdata.getTotalTax()),
+            SizedBox(height: 10),
+            TaxListView(taxdata: taxdata),
+            SizedBox(height: 10),
+            Text(
+              'Imposto por NF',
+              style: TextStyle(color: Settings.TextColor, fontSize: 18),
+            ),
+            Expanded(child: ProductsListView(taxdata: taxdata)),
+          ],
         ),
-        Expanded(child: ProductsListView(taxdata: taxdata)),
-      ],
+      ),
     );
   }
 }

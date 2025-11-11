@@ -59,9 +59,67 @@ class Data:
                 for nf in self.NFs:
                     if request['id'] == nf.getIdNF():
                         return nf.getAllInfo()
+                    
+        # Retorna todos os fornecedores com suas notas fiscais
+        if request['command'] == 'Suppliers':
+            return self.getAllSuppliers()
+        
+        # Retorna todas as transportadoras com suas notas fiscais
+        if request['command'] == 'Transporters':
+            return self.getAllTransporters()
 
         return None
     
+    def getAllSuppliers(self):
+        """
+        Obtém todos os suppliers distintos, agrupando NFs pelo mesmo CNPJ.
+        """
+        suppliers_map = {}
+
+        for nf in self.NFs:
+            supplier = nf.getSupplier()
+            cnpj = supplier['CNPJ']
+
+            # Se ainda não existe, adiciona o supplier no mapa
+            if cnpj not in suppliers_map:
+                suppliers_map[cnpj] = {
+                    'NAME': supplier['NAME'],
+                    'CNPJ': cnpj,
+                    'SITE': supplier['SITE'],
+                    'NFs': [supplier['NFs']]
+                }
+            else:
+                # Se já existe, só adiciona a NF ao mesmo CNPJ
+                suppliers_map[cnpj]['NFs'].append(supplier['NFs'])
+
+        # Retorna como lista de dicionários
+        return list(suppliers_map.values())
+    
+    def getAllTransporters(self):
+        """
+        Obtém todos os transportadores distintos, agrupados pelo mesmo nome 
+        """
+        transporters_map = {}
+
+        for nf in self.NFs:
+            transporter = nf.getTransporter()
+            cnpj = transporter['CNPJ']
+
+            # Se ainda não existe, adiciona o transporter no mapa
+            if cnpj not in transporters_map:
+                transporters_map[cnpj] = {
+                    'NAME': transporter['NAME'],
+                    'CNPJ': cnpj,
+                    'NFs': [transporter['NFs']]
+                }
+            else:
+                # Se já existe, só adiciona a NF ao mesmo CNPJ
+                transporters_map[cnpj]['NFs'].append(transporter['NFs'])
+
+        # Retorna como lista de dicionários
+        return list(transporters_map.values())
+        
+        
     def getTotalProducts(self):
         '''
         Conta o total de produtos

@@ -30,4 +30,8 @@ class Settings {
   static String getUrlNf(String number) {
     return "http://${serverIP}:${serverPort}/info?command=NF&id=$number";
   }
+
+  static String getUrlSuppliers() {
+    return "http://${serverIP}:${serverPort}/info?command=Suppliers";
+  }
 }
