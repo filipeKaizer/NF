@@ -3,30 +3,31 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nf/NF/NF.dart';
 import 'package:nf/NF/invoiceData.dart';
+import 'package:nf/NF/taxData.dart';
 import 'package:nf/settings.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
 class Memory extends ChangeNotifier {
   late List<XmlDocument> files = [];
+
   late Invoicedata invoicedata;
+  late Taxdata taxdata;
 
   Memory() {
-    // Inicializa com valores padrão
     invoicedata = Invoicedata();
-    // Busca os dados do servidor de forma assíncrona
-    _loadInvoiceData();
+    taxdata = Taxdata();
+
+    _refreshData();
   }
 
-  // Método privado para carregar os dados do servidor
-  Future<void> _loadInvoiceData() async {
+  Future<void> _refreshData() async {
     try {
       invoicedata = await Invoicedata.fromServer();
-      print(invoicedata.totalPrice);
-      notifyListeners(); // notifica os listeners quando os dados chegam
+      taxdata = await Taxdata.fromServer();
+      notifyListeners();
     } catch (e) {
-      print("Erro ao carregar invoiceData: $e");
-      // mantém invoicedata com valores padrão se houver erro
+      print("Erro ao atualizar dados: $e");
     }
   }
 
@@ -71,7 +72,7 @@ class Memory extends ChangeNotifier {
     ).showSnackBar(SnackBar(content: Text("$sended $failure")));
 
     files = [];
-    _loadInvoiceData();
+    _refreshData();
   }
 
   String plural(int val) {

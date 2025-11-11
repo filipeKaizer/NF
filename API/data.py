@@ -50,7 +50,7 @@ class Data:
                     return products
         
         # Todas as tributações
-        if request['command'] == 'TaxAll':
+        if request['command'] == 'Tax':
             return self.getAllTax()
 
         # Retorna todas as informações de uma nota fiscal
@@ -94,11 +94,15 @@ class Data:
                 'II': 0,
                 'Total': 0
             }
-            
+        products = []
         for nf in self.NFs:
             nf_tax = nf.getAllTax()
+            products.append(nf_tax)
+            
             for t in tax.keys():
                 tax[t] += nf_tax[t] if nf_tax[t] is not None else 0
+
+        tax['products'] = products
 
         return tax
     

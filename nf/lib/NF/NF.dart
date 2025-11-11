@@ -5,7 +5,7 @@ import 'package:nf/settings.dart';
 class Nf {
   late double total;
   late double tax;
-  final int qtdProd;
+  late int qtdProd;
 
   late General general;
   late Emit emit;
@@ -32,6 +32,16 @@ class Nf {
     this.general = General.none(number);
     this.remet = Remet.none();
     this.products = [];
+  }
+
+  Nf.byNumber({required String number}) {
+    this.emit = Emit.none();
+    this.general = General.none(number);
+    this.remet = Remet.none();
+    this.products = [];
+    this.total = 0;
+    this.tax = 0;
+    this.qtdProd = 0;
   }
 
   static Future<Nf> fromServer(Nf nf) async {

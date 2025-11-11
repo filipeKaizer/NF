@@ -23,6 +23,10 @@ class Settings {
     return "http://${serverIP}:${serverPort}/info?command=General";
   }
 
+  static String getUrlTax() {
+    return "http://${serverIP}:${serverPort}/info?command=Tax";
+  }
+
   static String getUrlNf(String number) {
     return "http://${serverIP}:${serverPort}/info?command=NF&id=$number";
   }

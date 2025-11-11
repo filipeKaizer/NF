@@ -38,7 +38,7 @@ class _AboutnfState extends State<Aboutnf> {
         appBar: AppBar(
           backgroundColor: Settings.appBarBackgoundColor,
           title: Text(
-            'NF ${nf.general.number}',
+            '${nf.general.number.substring(0, 5)}...${nf.general.number.substring(nf.general.number.length - 5, nf.general.number.length - 1)}',
             style: TextStyle(color: Settings.TextColor),
           ),
         ),
@@ -51,7 +51,7 @@ class _AboutnfState extends State<Aboutnf> {
       appBar: AppBar(
         backgroundColor: Settings.appBarBackgoundColor,
         title: Text(
-          'NF ${nf.general.number}',
+          '${nf.general.number.substring(0, 5)}...${nf.general.number.substring(nf.general.number.length - 5, nf.general.number.length - 1)}',
           style: TextStyle(color: Settings.TextColor),
         ),
         centerTitle: true,

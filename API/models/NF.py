@@ -326,7 +326,8 @@ class NF:
                 'COFINS': 0,
                 'ISSQN': 0,
                 'II': 0,
-                'Total': 0
+                'Total': 0,
+                'id': self.getIdNF()
             }
         
         if self.json is not None:
@@ -344,7 +345,7 @@ class NF:
 
                 # Soma todas as taxas
                 for t in tax.keys():
-                    if t != 'Total':
+                    if t != 'Total' and t != 'id':
                         tax["Total"] += tax[t]
                 return tax
         return 0

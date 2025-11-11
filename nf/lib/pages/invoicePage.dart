@@ -18,8 +18,7 @@ class Invoicepage extends StatefulWidget {
 class _InvoicepageState extends State<Invoicepage> {
   @override
   Widget build(BuildContext context) {
-    Invoicedata invoicedata =
-        context.watch<Memory>().invoicedata as Invoicedata;
+    Invoicedata invoicedata = context.watch<Memory>().invoicedata;
 
     return Center(
       child: Padding(
@@ -121,6 +120,13 @@ class CostValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String convertValue() {
+      if (value >= 100000) {
+        return "${(value / 100000).toStringAsFixed(0)}k";
+      }
+      return value.toStringAsFixed(2);
+    }
+
     return Container(
       width:
           (MediaQuery.of(context).size.width / 2) -
@@ -148,7 +154,7 @@ class CostValue extends StatelessWidget {
           ),
           // Corpo
           Text(
-            "R\$${value.toStringAsFixed(2)}",
+            "R\$${convertValue()}",
             style: TextStyle(color: Settings.TextColor, fontSize: 25),
           ),
         ],
@@ -170,6 +176,13 @@ class _NFListState extends State<NFList> {
   Widget build(BuildContext context) {
     final List<Nf> nfs = (context.watch<Memory>().invoicedata).NFS;
     final int qtd = context.watch<Memory>().files.length;
+
+    String convertValue(double value) {
+      if (value >= 100000) {
+        return "${(value / 100000).toStringAsFixed(0)}k";
+      }
+      return value.toStringAsFixed(2);
+    }
 
     Widget notSavedNF(Memory memory) {
       return Container(
@@ -303,14 +316,14 @@ class _NFListState extends State<NFList> {
                             },
                             child: ListTile(
                               trailing: Text(
-                                'R\$${rf.total.toStringAsFixed(2)}',
+                                'R\$${convertValue(rf.total)}',
                                 style: TextStyle(
                                   color: Settings.TextColor,
                                   fontSize: 15,
                                 ),
                               ),
                               leading: Text(
-                                'Nf ${index}',
+                                '${rf.general.number.substring(0, 2)}...${rf.general.number.substring(rf.general.number.length - 4, rf.general.number.length - 1)}',
                                 style: TextStyle(
                                   color: Settings.TextColor,
                                   fontSize: 20,
@@ -367,7 +380,7 @@ class _NFListState extends State<NFList> {
                                           ),
                                           SizedBox(width: 2),
                                           Text(
-                                            'R\$${rf.tax.toStringAsFixed(2)}',
+                                            'R\$${convertValue(rf.tax)}',
                                             style: TextStyle(
                                               color: Settings.TextColor,
                                               fontSize: 12,
