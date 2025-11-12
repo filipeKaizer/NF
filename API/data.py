@@ -93,7 +93,9 @@ class Data:
                 suppliers_map[cnpj]['NFs'].append(supplier['NFs'])
 
         # Retorna como lista de dicionários
-        return list(suppliers_map.values())
+        return {
+            'Suppliers': list(suppliers_map.values())
+        }
     
     def getAllTransporters(self):
         """
@@ -117,7 +119,9 @@ class Data:
                 transporters_map[cnpj]['NFs'].append(transporter['NFs'])
 
         # Retorna como lista de dicionários
-        return list(transporters_map.values())
+        return {
+            'Transporters': list(transporters_map.values())
+        }
         
         
     def getTotalProducts(self):

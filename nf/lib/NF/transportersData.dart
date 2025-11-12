@@ -1,22 +1,21 @@
 import 'dart:convert';
 
-import 'package:nf/NF/utils/suppliers.dart';
 import 'package:nf/settings.dart';
 import 'package:http/http.dart' as http;
 
-class Supplierdata {
-  late List<Supplier> suppliers;
+class TransportersData {
+  late List<Transporter> transporters;
 
-  Supplierdata() {
-    suppliers = [];
+  TransportersData() {
+    transporters = [];
   }
 
-  static Future<Supplierdata> fromServer() async {
-    Supplierdata instance = Supplierdata();
+  static Future<TransportersData> fromServer() async {
+    TransportersData instance = TransportersData();
 
     Map<String, dynamic> json = {};
 
-    String url = Settings.getUrlSuppliers();
+    String url = Settings.getUrlTransporters();
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -36,27 +35,25 @@ class Supplierdata {
       json = {};
     }
 
-    if (json['Suppliers'] is List) {
-      instance.suppliers = [];
-      for (Map<String, dynamic> supplier in (json['Suppliers'] as List)) {
-        instance.suppliers.add(Supplier.fromJson(supplier));
+    if (json['Transporters'] is List) {
+      instance.transporters.clear();
+      for (Map<String, dynamic> item in (json['Transporters'] as List)) {
+        instance.transporters.add(Transporter.fromJson(item));
       }
     }
+
     return instance;
   }
 }
 
-class Supplier {
-  String name;
-  String site;
-  String cnpj;
+class Transporter {
+  late String CNPJ;
+  late String name;
+  late List<String> nfs;
 
-  List<String> nfs;
-
-  Supplier.fromJson(Map<String, dynamic> json)
+  Transporter.fromJson(Map<String, dynamic> json)
     : name = (json['NAME'] ?? "").toString(),
-      site = (json['SITE'] ?? "").toString(),
-      cnpj = (json['CNPJ'] ?? "").toString(),
+      CNPJ = (json['CNPJ'] ?? "").toString(),
       nfs = _parseNfs(json['NFs']);
 
   static List<String> _parseNfs(dynamic raw) {

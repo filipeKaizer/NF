@@ -34,4 +34,8 @@ class Settings {
   static String getUrlSuppliers() {
     return "http://${serverIP}:${serverPort}/info?command=Suppliers";
   }
+
+  static String getUrlTransporters() {
+    return "http://${serverIP}:${serverPort}/info?command=Transporters";
+  }
 }

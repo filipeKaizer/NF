@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:nf/NF/NF.dart';
 import 'package:nf/NF/invoiceData.dart';
 import 'package:nf/NF/supplierData.dart';
 import 'package:nf/NF/taxData.dart';
+import 'package:nf/NF/transportersData.dart';
 import 'package:nf/settings.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
@@ -15,11 +15,13 @@ class Memory extends ChangeNotifier {
   late Invoicedata invoicedata;
   late Taxdata taxdata;
   late Supplierdata supplierdata;
+  late TransportersData transportersData;
 
   Memory() {
     invoicedata = Invoicedata();
     taxdata = Taxdata();
     supplierdata = Supplierdata();
+    transportersData = TransportersData();
 
     _refreshData();
   }
@@ -29,6 +31,7 @@ class Memory extends ChangeNotifier {
       invoicedata = await Invoicedata.fromServer();
       taxdata = await Taxdata.fromServer();
       supplierdata = await Supplierdata.fromServer();
+      transportersData = await TransportersData.fromServer();
 
       notifyListeners();
     } catch (e) {

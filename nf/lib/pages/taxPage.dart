@@ -162,7 +162,6 @@ class _ProductsListViewState extends State<ProductsListView> {
                 color: Settings.containerColor,
                 child: InkWell(
                   onTap: () async {
-                    // ✅ Torne a chamada assíncrona
                     final nf = await Nf.byNumber(number: product.id);
 
                     if (!mounted) return;

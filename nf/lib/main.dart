@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_material_design_icons/flutter_material_design_icons.dart';
-import 'package:nf/NF/invoiceData.dart';
 import 'package:nf/pages/invoicePage.dart';
 import 'package:nf/pages/otherPage.dart';
 import 'package:nf/pages/taxPage.dart';
