@@ -430,7 +430,6 @@ class NF:
                 # Se existir vICMS, soma
                 if 'vICMS' in conteudo:
                     total_icms += float(conteudo['vICMS'])
-        print("ICMS:", total_icms)
         return total_icms
 
     def getIPI(self, product):
