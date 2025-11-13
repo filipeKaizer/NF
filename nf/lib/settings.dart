@@ -11,8 +11,8 @@ class Settings {
   static Color selectedColor = Color.fromARGB(255, 239, 246, 224);
   static Color unselectedColor = Color.fromARGB(255, 174, 195, 176);
 
-  static String serverIP = '192.168.0.168';
-  static int serverPort = 5002;
+  static String serverIP = '192.168.0.1';
+  static int serverPort = 5000;
   static String route = 'nf';
 
   static String getUrl() {
