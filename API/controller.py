@@ -17,7 +17,7 @@ class Controller:
 
         # Importa as rotas
         Flask_service(self)
-        self.flask.run(host='192.168.0.168', port=self.config.PORT, debug=self.config.DEBUG)
+        self.flask.run(host=self.config.FLASK_IP, port=self.config.PORT, debug=self.config.DEBUG)
 
 if __name__ == "__main__":
     Controller()

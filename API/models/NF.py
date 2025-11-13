@@ -1,9 +1,15 @@
 import xmltodict, json, jsonschema
 
 class NF:
-    def __init__(self, XML):
-        self.xml = XML
-        self.json : json = json.loads(self.convertToJson())
+    def __init__(self, XML = "", JSON = ""):
+        self.xml = ""
+        self.json = ""
+        if XML != "":
+            self.xml = XML
+            self.json = json.loads(self.convertToJson())
+
+        if JSON != "":
+            self.json = json.loads(JSON)
 
     def convertToJson(self):
         # Conversões
@@ -17,6 +23,11 @@ class NF:
         if Json is not None:
             ...
         return Json
+    
+    def loadFromJson(self):
+        '''
+        Carrega a partir do json recebido
+        '''
 
     def getTotalPrice(self):
         '''
@@ -222,6 +233,7 @@ class NF:
                 return sorted_products
             except Exception as e:
                 print(e)
+        print(f"getAllProducts retornou none")
         return None
 
     def getIdNF(self) -> str:
@@ -405,7 +417,6 @@ class NF:
                 'CNPJ': safe(self.json, 'infNFe', 'emit', 'CNPJ'),
                 'NFs': self.getIdNF()
             }
-
 
     def getICMS(self, product):
         '''

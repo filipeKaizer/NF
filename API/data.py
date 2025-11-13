@@ -5,13 +5,16 @@ class Data:
     def __init__(self, database : Database):
         self.database = database
 
-        self.NFs = []
+        self.NFs = self.database.loadAllNFs(15)
 
     def addNF(self, NF : NF):
-        # Salva na base de dados
+        '''
+        Adiciona uma nova NF e salva-a na base de dados
+        '''
         if NF.json is not None:
-            self.NFs.append(NF)
-            self.database.saveNF(Json=NF.json, nf_number=NF.getIdNF())
+            if not self.NFExists(NF.getIdNF()):
+                self.NFs.append(NF)
+                self.database.saveNF(Json=NF.json, nf_number=NF.getIdNF())
 
     def getFromJSON(self, request):
         '''
@@ -45,7 +48,7 @@ class Data:
             for nf in self.NFs:
                 if nf.getIdNF() == request['id']:
                     products = nf.getAllProducts()
-                    if request['order']:
+                    if request['order'] or True: # <- Temporário
                         products.sort(key=lambda p: p['prod']['xProd'])
                     return products
         
@@ -123,7 +126,16 @@ class Data:
             'Transporters': list(transporters_map.values())
         }
         
-        
+    def NFExists(self, number):
+        '''
+        Verifica se uma NF já existe na memória ou no banco de dados
+        '''
+        if len(self.NFs) > 0:
+            for nf in self.NFs:
+                if nf.getIdNF() == number:
+                    return True
+            return self.database.existsNF(number)
+
     def getTotalProducts(self):
         '''
         Conta o total de produtos
