@@ -16,6 +16,14 @@ class SuppliersPage extends StatefulWidget {
 class _SuppliersPageState extends State<SuppliersPage> {
   @override
   Widget build(BuildContext context) {
+    String getMaxText(String text) {
+      int maxLength = 20;
+      if (text.length > maxLength) {
+        return '${text.substring(0, maxLength)}...';
+      }
+      return text;
+    }
+
     return Container(
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       child: ListView.builder(
@@ -39,7 +47,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
                   },
                   child: ListTile(
                     leading: Text(
-                      '${product.cnpj}',
+                      '${getMaxText(product.name)}',
                       style: TextStyle(color: Settings.TextColor, fontSize: 15),
                     ),
                     trailing: Text(

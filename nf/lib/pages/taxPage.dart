@@ -176,7 +176,7 @@ class _ProductsListViewState extends State<ProductsListView> {
                       style: TextStyle(color: Settings.TextColor, fontSize: 15),
                     ),
                     leading: Text(
-                      '${product.id.substring(0, 5)}...${product.id.substring(product.id.length - 5, product.id.length - 1)}',
+                      '${product.id.substring(0, 5)}...${product.id.substring(product.id.length - 4, product.id.length)}',
                       style: TextStyle(color: Settings.TextColor, fontSize: 20),
                     ),
                   ),

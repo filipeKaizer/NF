@@ -25,7 +25,7 @@ class _AbouttransporterState extends State<Abouttransporter> {
             Navigator.pop(context);
           },
         ),
-        title: Text('${widget.transporter.name.substring(0, 29)}...'),
+        title: Text('${widget.transporter.name}'),
         centerTitle: true,
         titleTextStyle: TextStyle(color: Settings.TextColor),
       ),
@@ -63,7 +63,7 @@ class NFsListViewTransporters extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(
-              "${nfs[index].substring(0, 5)}...${nfs[index].substring(nfs[index].length - 5, nfs[index].length - 1)}",
+              "${nfs[index].substring(0, 5)}...${nfs[index].substring(nfs[index].length - 4, nfs[index].length)}",
               style: TextStyle(color: Settings.TextColor, fontSize: 15),
             ),
             leading: CircleAvatar(

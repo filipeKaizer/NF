@@ -27,7 +27,7 @@ class _AboutsupplierState extends State<Aboutsupplier> {
             Navigator.pop(context);
           },
         ),
-        title: Text('${widget.supplier.name.substring(0, 29)}...'),
+        title: Text('${widget.supplier.name}'),
         centerTitle: true,
         titleTextStyle: TextStyle(color: Settings.TextColor),
       ),
@@ -39,7 +39,13 @@ class _AboutsupplierState extends State<Aboutsupplier> {
           children: [
             InfoBox("Nome", widget.supplier.name, 15),
             InfoBox("CNPJ", widget.supplier.cnpj, 15),
-            InfoBox("Site", widget.supplier.site, 15),
+            InfoBox(
+              "Site",
+              (widget.supplier.site.isNotEmpty)
+                  ? widget.supplier.site
+                  : "Não informado",
+              15,
+            ),
             SizedBox(height: 10),
             Text(
               "Notas fiscais",
@@ -66,7 +72,7 @@ class NFsListViewSuppliers extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(
-              "${nfs[index].substring(0, 5)}...${nfs[index].substring(nfs[index].length - 5, nfs[index].length - 1)}",
+              "${nfs[index].substring(0, 5)}...${nfs[index].substring(nfs[index].length - 4, nfs[index].length)}",
               style: TextStyle(color: Settings.TextColor, fontSize: 15),
             ),
             leading: CircleAvatar(

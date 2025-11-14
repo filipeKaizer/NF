@@ -323,7 +323,7 @@ class _NFListState extends State<NFList> {
                                 ),
                               ),
                               leading: Text(
-                                '${rf.general.number.substring(0, 2)}...${rf.general.number.substring(rf.general.number.length - 4, rf.general.number.length - 1)}',
+                                '${rf.general.number.substring(0, 2)}...${rf.general.number.substring(rf.general.number.length - 4, rf.general.number.length)}',
                                 style: TextStyle(
                                   color: Settings.TextColor,
                                   fontSize: 20,
