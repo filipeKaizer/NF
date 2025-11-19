@@ -10,7 +10,7 @@ class Flask_service:
             '''
             xml = request.data.decode('utf-8')
 
-            nf = NF(xml)
+            nf = NF(XML=xml)
 
             if nf.json is not None:
                 controller.data.addNF(nf)
@@ -29,7 +29,7 @@ class Flask_service:
             req['id'] = request.args.get('id', type=str)
             req['order'] = request.args.get('order', type=bool)
 
-            req['order'] = False if req['order'] is None else req['order']
+            req['order'] = True if req['order'] is None else req['order']
 
             response = controller.data.getFromJSON(req)
 

@@ -28,7 +28,7 @@ class Data:
                     'totalProducts': self.getTotalProducts(), # Qtd de produtos
                     'totalPrice': self.getTotalPrice(), # Preço total
                     'totalTax': self.getAllTax()['Total'] or 0, # Total de taxas
-                    'products': self.getGeneralNFs() # Informações das NFs
+                    'products': self.getGeneralNFs(order=request['order']) # Informações das NFs
                 }
 
             products = []
@@ -48,13 +48,13 @@ class Data:
             for nf in self.NFs:
                 if nf.getIdNF() == request['id']:
                     products = nf.getAllProducts()
-                    if request['order'] or True: # <- Temporário
+                    if request['order']:
                         products.sort(key=lambda p: p['prod']['xProd'])
                     return products
         
         # Todas as tributações
         if request['command'] == 'Tax':
-            return self.getAllTax()
+            return self.getAllTax(order=request['order']) 
 
         # Retorna todas as informações de uma nota fiscal
         if request['command'] == 'NF':
@@ -155,7 +155,7 @@ class Data:
             total += nf.getTotalPrice()
         return total
     
-    def getAllTax(self):
+    def getAllTax(self, order = False):
         '''
         Obtem todas as taxas
         '''
@@ -172,19 +172,27 @@ class Data:
         for nf in self.NFs:
             nf_tax = nf.getAllTax()
             products.append(nf_tax)
-            
+
             for t in tax.keys():
-                tax[t] += nf_tax[t] if nf_tax[t] is not None else 0
+                tax[t] += nf_tax.get(t, 0) or 0
+
+        # Ordena por 'Total' decrescente
+        if order:
+            products.sort(key=lambda x: x.get('Total', 0) or 0, reverse=True)
 
         tax['products'] = products
 
         return tax
     
-    def getGeneralNFs(self):
+    def getGeneralNFs(self, order=False):
         '''
         Gera uma lista com dados gerais das NFs
         '''
         nfs = []
         for nf in self.NFs:
             nfs.append(nf.getGeneralInfo())
+        
+        if order:
+            nfs.sort(key=lambda x: x.get('totalPrice', 0) or 0, reverse=True)
+
         return nfs

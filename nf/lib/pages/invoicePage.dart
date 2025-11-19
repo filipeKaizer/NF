@@ -181,7 +181,7 @@ class _NFListState extends State<NFList> {
       if (value >= 100000) {
         return "${(value / 100000).toStringAsFixed(0)}k";
       }
-      return value.toStringAsFixed(2);
+      return value.toStringAsFixed(1);
     }
 
     Widget notSavedNF(Memory memory) {
