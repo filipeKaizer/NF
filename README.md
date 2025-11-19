@@ -3,8 +3,6 @@
 `Dev: Filipe Sacchet Kaizer`
 `Disciplina: Linguagens de Marcação Extensíveis` 
 
-**[Apresentação no Youtube](https://youtu.be/I5WyfdAn6aY)**
-
 O presente projeto contempla um sistema completo destinado armazenamento, processamento e visualização de notas fiscais eletrônicas. 
 
 O sistema desenvolvido é composto por uma API central em `Python` e uma aplicação móvel desenvolvida em `Flutter`.  
