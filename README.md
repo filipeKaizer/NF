@@ -45,6 +45,7 @@ sudo mysql -u root -p 'senha_aqui'
 Dentro do Mysql, crie a base de dados para a API e acesse-a:
 
 ~~~SQL
+
 CREATE DATABASE nf;
 USE nf;
 ~~~
